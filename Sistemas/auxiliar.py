@@ -87,7 +87,7 @@ def pivoteamento_total(A,b,k,x0):
 
 def escalonador_de_sistemas(A,b,metodo=pivoteamento_parcial,imprimir=False,**kwargs):
         
-    '''Transforma a matriz A em uma matriz triangular superior. Possibilidade de escolher o método de pivoteamento'''
+    '''Transforma a matriz A em uma matriz triangular superior. Possibilidade de escolher o método de pivoteamento, mas só fiz o pivoteamento parcial.'''
     
     if imprimir: print("\n## Escalonando sistema... ##\n")
      

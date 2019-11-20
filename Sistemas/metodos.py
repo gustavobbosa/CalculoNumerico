@@ -2,26 +2,43 @@ from . import auxiliar as aux
 
 # ################################################################
 
-def eliminacao_gauss(A,b,metodo=aux.pivoteamento_parcial,imprimir = False):
+def eliminacao_gauss(
+    A,
+    b,
+    metodo=aux.pivoteamento_parcial,
+    imprimir = False,
+    **kwargs
+):
     
-    '''Retorna uma lista com os xn.'''
+    '''
+    Entrada:
+    A = Matriz dos coeficientes
+    b = Vetor das constantes
+    metodo: método de pivoteamento
+    imprimir: autoexplicativo
+    
+    Retorna uma lista com os xn.
+    '''
     
     if imprimir: print("\n## Começando eliminação de Gauss ##\n")
     
-    A, b = aux.matriz(A), aux.matriz(b)
-    aux.escalonador_de_sistemas(A,b,metodo,imprimir)
+    # Preparação inicial
+    A, b = aux.matriz(A), aux.matriz(b) # Converter as matrizes em matrizes do numpy com núumeros tipo float64.
+    aux.escalonador_de_sistemas(A,b,metodo,imprimir=imprimir,**kwargs) # Escalona o sistema in-place
+    
     n = len(A)
     respostas = [0 for _ in range(n)]
     i,j = n,n
     
-    while i > 0:
+    # Resolução do sistema escalonado
+    while i > 0: # executa para cada linha
         
         soma = 0
-        while j > i:
+        while j > i: # Executa para cada coluna naquela linha
             soma += A[i-1][j-1] * respostas[j-1]
             j -= 1
             
-        respostas[i-1] = (b[i-1] - soma) / A[i-1][i-1]
+        respostas[i-1] = (b[i-1] - soma) / A[i-1][i-1] # Adiciona a nova entrada na lista respostas.
         
         j = n
         i -= 1
@@ -29,7 +46,7 @@ def eliminacao_gauss(A,b,metodo=aux.pivoteamento_parcial,imprimir = False):
     if imprimir: print("x=",respostas,"\n## Eliminação finalizada ##\n")
     return respostas
 
-# #############################################################
+##############################################################
 
 def gauss_jacobi (
     A,b,x0,

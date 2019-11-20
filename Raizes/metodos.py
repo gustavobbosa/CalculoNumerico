@@ -1,26 +1,32 @@
-def bisseccao(func,a,b,epsilon=0.05,imprimir=False):
-    
+import sympy as sym
+
+def bisseccao(func,a,b,epsilon=0.05,imprimir=True):
+    '''
+Computa a raiz no intervalo [a,b] de uma função de um argumento e saída numérica. Retorna a raiz.
+
+epsilon é o limite do tamanho do intervalo [a,b].
+Pode imprimir as etapas na tela.
+    '''
     k = 1
     
-    if b - a < epsilon:
+    if b - a < epsilon: # Verifica condição de parada
             return a
     
-    if imprimir: print("Iteração    x\t\tf(x)\t\ta\t\tb\t\tb-a\n")
+    if imprimir: print("Iteração    x\t\tf(x)\t\ta\t\tb\t\tb-a\n") # Cabeçalho da impressão
     
     while True:
 
         m = func(a)
 
-        x = (a+b)/2
+        x = (a+b)/2 # Computa o ponto médio
         
-        if imprimir: print(f"{k:2}\t{x:.8f}\t{func(x):.4e}\t{a:.8f}\t{b:.8f}\t{b-a:.4e}")
+        if imprimir: print(f"{k:2}\t{x:.8f}\t{func(x):.4e}\t{a:.8f}\t{b:.8f}\t{b-a:.4e}") # imprime iteração
         
-        if b - a < epsilon:
+        if b - a < epsilon: # Verifica condição de parada
             return x
         
-        if m*func(x)>0:
+        if m*func(x)>0: # Determina qual ponto excluir
             a = x
-
         else:
             b = x
         
@@ -29,20 +35,26 @@ def bisseccao(func,a,b,epsilon=0.05,imprimir=False):
 ###################################################################
 
 # Tem duas precisões, uma pro intervalo no domínio e um pra imagem
-def posicao_falsa(func,a,b,epsilon1=0.05,epsilon2=0.05,imprimir=False):
+def posicao_falsa(func,a,b,epsilon1=0.05,epsilon2=0.05,imprimir=True):
+    
+    '''
+Coomputa a raiz no intervalo [a,b] de uma função de um argumento e saída numérica. Retorna a raiz.
+
+epsilon1 é o limite do tamanho do intervalo [a,b].
+epsilon2 é a precisão do valor absoluto da função.
+    '''
     
     k = 1
     
+    # Verifica precisões antes de começar
     if b - a < epsilon1:
         return a
-    
     if abs(func(a)) < epsilon2:
         return a
-        
     if abs(func(b)) < epsilon2:
         return b
     
-    if imprimir: print("Iteração    x\t\tf(x)\t\ta\t\tb\t\tb-a\n")
+    if imprimir: print("Iteração    x\t\tf(x)\t\ta\t\tb\t\tb-a\n") # Imprime cabeçalho
     
     while True:
         
@@ -54,19 +66,19 @@ def posicao_falsa(func,a,b,epsilon1=0.05,epsilon2=0.05,imprimir=False):
         
         if imprimir: print(f"{k:2}\t{x:.8f}\t{func(x):.4e}\t{a:.8f}\t{b:.8f}\t{b-a:.4e}")
 
+        # Verifica parada
         if b - a < epsilon1:
             return x
         
         # Também se verifica precisão na imagem 
         if abs(fa) < epsilon2:
             return a
-        
         if abs(fb) < epsilon2:
             return b
         
+        # Determina ponto a ser excluído
         if fa*func(x)>0:
             a = x
-        
         else:
             b = x
         
@@ -76,9 +88,18 @@ def posicao_falsa(func,a,b,epsilon1=0.05,epsilon2=0.05,imprimir=False):
 
 def ponto_fixo(func,phi,x0,epsilon1=1e-5,epsilon2=1e-5,imprimir=True,k_max=200,f_max=1000000):
     
+    '''
+Calcula raiz de func usando o método do ponto fixo e a função phi. Retorna a raiz.
+
+requer ponto inicial x0
+epsilon1: precisão da imagem
+epsilon2: precisão do domínio
+k_max e f_max: Limites para evitar que o código trave. k_max é numero máximo de passos e f_max é valor máximo da imagem.
+    '''
+    
     x = x0
     
-    k = 0
+    ponto_fixo.k = 0 # k é atributo para poder ser lido após execução da função (Questão 3)
     
     if imprimir: print("Iteração\t\t\t\tx\t\t\t\tf(x)")
     
@@ -87,38 +108,62 @@ def ponto_fixo(func,phi,x0,epsilon1=1e-5,epsilon2=1e-5,imprimir=True,k_max=200,f
         f = func(x)
         p = phi(x)
         
+        # Verifica parada
         if abs(f) < epsilon1:
-            
             print(f"\nPronto! f(x) = {f} < {epsilon1} = epsilon1")
             return x
-        
         if abs(x - p) < epsilon2:
-            
             print(f"\nPronto! |x-φ(x)| = {x-p} < {epsilon2} = epsilon2")
             return p
         
-        if abs(f) > f_max or k > k_max: 
-            
+        # Evitar que o código trave
+        if abs(f) > f_max or ponto_fixo.k > k_max: 
             print("Saiu do controle!")
             return
         
-        k += 1
+        ponto_fixo.k += 1
         
-        if imprimir: print (f"{k}\t\t\t\t{x:.8f}\t\t\t\t{f:.8f}")
+        if imprimir: print (f"{ponto_fixo.k}\t\t\t\t{x:.8f}\t\t\t\t{f:.8f}")
 
-        x = p
+        x = p # phi(x) se torna o novo x
         
 #########################################################################
 
-def newton_raphson(func,deriv,x0,**kwargs):
+def newton_raphson(func,x0,deriv=None,**kwargs):
     
-    '''Função e derivada como funções normais do python, não precisa de bibliotecas externas.
-Opção imprimir lista os valores de x e f(x) em cada etapa'''
+    '''
+Calcula a raiz de func pelo método de newton. 
+Pode-se usar como entrada a função e sua derivada como funções do python, ou só a função como expressão sympy.
+
+Usa os mesmos parâmetros que a função ponto_fixo
+    '''
     
+    # Se não houver derivada na entrada, calculá-la a partir de func. Só possível se func for expressão sympy.
+    if deriv == None: 
+        if 'sympy' in str(type(func)):
+            deriv = func.diff()
+        else:
+            raise TypeError("Falta a derivada e não consigo calculá-la!")
+    
+    # Tranformar as expressões sympy em funções, caso seja necessário
+    if 'sympy' in str(type(func)):
+        def func_exec(t):
+            return float(func.subs(func.free_symbols.pop(),t))
+    else:
+        func_exec = func
+    if 'sympy' in str(type(deriv)):
+        def deriv_exec(t):
+            return float(deriv.subs(deriv.free_symbols.pop(),t))
+    else:
+        deriv_exec = deriv
+    
+    # Definir phi(x) de acordo com o método de Newton Raphson
     def phi(x):
-        return x-func(x)/deriv(x)
+        return float(x-func_exec(x)/deriv_exec(x))
+    resposta = ponto_fixo(func_exec,phi,x0,**kwargs)
     
-    return metodo_ponto_fixo(func,phi,x0,**kwargs)
+    newton_raphson.k = ponto_fixo.k # k como atributo pra poder pegar o número final de passos caso necessário (Questão 3)
+    return resposta
         
 #################################################################################
 

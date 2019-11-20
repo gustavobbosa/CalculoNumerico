@@ -1,10 +1,7 @@
-'''Métodos para efetuar interpolação polinomial de um conjunto de dados'''
+'''
+Métodos para efetuar interpolação polinomial de um conjunto de dados
 
-from ..Sistemas import metodos as sl
-from . import auxiliar as aux
-import numpy as np
 
-print('''
 UTILIZANDO O PACOTE Interpolacao.metodos:
 
 As funções fazem interpolação polinomial dos pontos contidos na lista de entrada dados. Os pontos estão na forma de tuple.
@@ -20,7 +17,13 @@ EXEMPLO:
     #
     
 Crie o tuple e execute a função.
-''')
+
+'''
+
+from ..Sistemas import metodos as sl
+from . import auxiliar as aux
+import numpy as np
+
 
 def sistema(dados, metodo=sl.eliminacao_gauss,**kwargs):
     
