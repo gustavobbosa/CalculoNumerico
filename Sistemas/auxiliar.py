@@ -1,3 +1,5 @@
+# coding: utf-8
+
 '''Funções auxiliares para os métodos'''
 import numpy as np
 
@@ -19,6 +21,7 @@ def faz_matriz_quadrada(lista):
     
     if not n.is_integer():
         raise ValueError("Tamanho da lista não é um quadrado")
+    n = int(n)
     
     return matriz(lista).reshape(n,n)    
     

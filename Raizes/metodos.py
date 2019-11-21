@@ -1,3 +1,5 @@
+# coding: utf-8
+
 import sympy as sym
 
 def bisseccao(func,a,b,epsilon=0.05,imprimir=True):
@@ -7,6 +9,8 @@ Computa a raiz no intervalo [a,b] de uma função de um argumento e saída numé
 epsilon é o limite do tamanho do intervalo [a,b].
 Pode imprimir as etapas na tela.
     '''
+    if b <= a: raise ValueError("B deve ser maior que A!")
+    if epsilon <= 0: raise ValueError("Precisão deve ser positiva!")
     k = 1
     
     if b - a < epsilon: # Verifica condição de parada
@@ -43,7 +47,8 @@ Coomputa a raiz no intervalo [a,b] de uma função de um argumento e saída num�
 epsilon1 é o limite do tamanho do intervalo [a,b].
 epsilon2 é a precisão do valor absoluto da função.
     '''
-    
+    if b <= a: raise ValueError("B deve ser maior que A!")
+    if (epsilon1 <= 0) or (epsilon2 <= 0) : raise ValueError("Precisão deve ser positiva!")
     k = 1
     
     # Verifica precisões antes de começar

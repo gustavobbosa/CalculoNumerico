@@ -1,10 +1,7 @@
-'''Métodos para efetuar interpolação polinomial de um conjunto de dados'''
+'''
+Métodos para efetuar interpolação polinomial de um conjunto de dados
 
-from ..Sistemas import metodos as sl
-from . import auxiliar as aux
-import numpy as np
 
-print('''
 UTILIZANDO O PACOTE Interpolacao.metodos:
 
 As funções fazem interpolação polinomial dos pontos contidos na lista de entrada dados. Os pontos estão na forma de tuple.
@@ -20,7 +17,13 @@ EXEMPLO:
     #
     
 Crie o tuple e execute a função.
-''')
+
+'''
+
+from ..Sistemas import metodos as sl
+from . import auxiliar as aux
+import numpy as np
+
 
 def sistema(dados, metodo=sl.eliminacao_gauss,**kwargs):
     
@@ -51,20 +54,30 @@ def lagrange( dados ):
         
     return pn
     
-def newton ( dados ):
+def newton ( dados, imprimir=False ):
+    
+    global tabela_dd
+    
+    '''
+Entrada tal qual a doctring do módulo CalculoNumerico.Interpolacao.metodos (este arquivo)
+    
+Saída: polinômio de uma dimensão do numpy.
+    '''
     
     n = len(dados) - 1
-    pn = dados[0][1]
+    pn = dados[0][1] # primeiro termo do polinômio é f(x₀)
     
-    for k in range (n):
+    for k in range (n): # para cada termo restante do polinômio
         
-        dif_div = aux.diferencas_divididas(dados[0:k+2])
+        # Calcula a diferença dividida dos pontos entre 0 e k+1. Executando aux.diferencas_divididas no modo 1
+        dif_div = aux.diferencas_divididas(dados[0:k+2],imprimir=imprimir)
         
+        # Executa o produtório (x-x₁)·(x-x₂)· ... ·(x-xₖ)
         prod = np.poly1d([1])
         for j in range(k+1):
             prod = prod * np.poly1d([1,-dados[j][0]])
         
-        pn += dif_div * prod
+        pn += dif_div * prod # Soma o elemento no polinômio final
             
     return pn
    

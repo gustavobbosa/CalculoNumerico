@@ -1,3 +1,5 @@
+# coding: utf-8
+
 '''
 Métodos para efetuar interpolação polinomial de um conjunto de dados
 
@@ -54,21 +56,39 @@ def lagrange( dados ):
         
     return pn
     
-def newton ( dados ):
+def newton ( dados, imprimir=False ):
+    
+    '''
+Entrada tal qual a doctring do módulo CalculoNumerico.Interpolacao.metodos (este arquivo)
+    
+Saída: polinômio de uma dimensão do numpy.
+    '''
     
     n = len(dados) - 1
-    pn = dados[0][1]
+    pn = dados[0][1] # primeiro termo do polinômio é f(x₀)
     
-    for k in range (n):
+    # gera a tabela de diferenças divididas
+    dif_div = aux.diferencas_divididas(dados,imprimir=imprimir)
+    
+    if imprimir: print(f"pₙ = {pn}")
+    
+    for k in range (n): # para cada termo restante do polinômio
         
-        dif_div = aux.diferencas_divididas(dados[0:k+2])
-        
+        # Executa o produtório (x-x₁)·(x-x₂)· ... ·(x-xₖ)
         prod = np.poly1d([1])
+        if imprimir: prod_prnt = ''
         for j in range(k+1):
             prod = prod * np.poly1d([1,-dados[j][0]])
+            if imprimir: prod_prnt += f'({np.poly1d([1,-dados[j][0]])})'.replace('\n','')
         
-        pn += dif_div * prod
-            
+        pn += float(dif_div[k+1,0]) * prod # Soma o termo no polinômio. 
+        
+        if imprimir: print(f"+ {float(dif_div[k+1,0])} · {prod_prnt}")
+    
+    if imprimir: # Deu um trabalhão pra imprimir a função final, pq tenho que colocar o 'pn =' no meio da string de pn!
+        str_final = '\n     ' + str(pn).split('\n')[0] + '\npₙ = ' + str(pn).split('\n')[1]
+        print(str_final)
+        
     return pn
    
 def quadrados_discreto (dados,grau,metodo=sl.eliminacao_gauss,**kwargs):
@@ -76,21 +96,25 @@ def quadrados_discreto (dados,grau,metodo=sl.eliminacao_gauss,**kwargs):
     m = len(dados)
     if m <= grau: raise ValueError("m deve ser maior que n")
     
+    # Criando as matrizes, a função f e montando um conjunto de base de polinômios
     A,b = [],[]
     func = aux.dados_para_funcao(dados)
     g = aux.base_polinomial(grau + 1)
     
+    # Montando as matrizes
     for i in range(grau + 1):
         
-        bi = sum( [ y * g[i](x) for x,y in dados ] )
-        b.append(bi)
+        bi = sum( [ y * g[i](x) for x,y in dados ] ) # computando cada elemento
+        b.append(bi) # colocando no vetor
         
-        Ai = []
-        for j in range(grau + 1):
+        Ai = [] # criando a linha
+        for j in range(grau + 1): # computando cada elemento da linha
             Aij = sum( [ g[i](x) * g[j](x) for x,y in dados ] )
-            Ai.append(Aij)
-        A.append(Ai)
+            Ai.append(Aij) # colocando o elemento na linha
+        A.append(Ai) # colocando a linha na matriz
     
+    # Resolvendo o sistema com o método escolhido (eliminação de Gauss por padrão)
     alfas = metodo(A,b,**kwargs)
     
+    # Retorna o polinômio (cada função de base vezes seu coeficiente α)
     return sum( [ float(alfas[i]) * g[i] for i in range(grau + 1) ] ) 
